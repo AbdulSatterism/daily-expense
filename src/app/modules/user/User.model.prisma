@@ -1,0 +1,27 @@
+model User {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  name       String?
+  password   String
+  email      String?
+  phone      String?
+  role       String   @default("USER")
+  image      String   @default("")
+  gender     EGender  @default(OTHER)
+
+  is_deleted             Boolean      @default(false)
+  is_verified            Boolean      @default(false)
+  auth_is_reset_password Boolean      @default(false)
+  auth_one_time_code     Int?
+  auth_expire_at         DateTime?
+  resetTokens            ResetToken[]
+
+  @@map("users")
+}
+
+enum EGender {
+  MALE
+  FEMALE
+  OTHER
+}
