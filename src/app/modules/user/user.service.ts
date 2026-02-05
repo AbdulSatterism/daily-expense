@@ -66,7 +66,8 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found for update');
   }
 
-  return result;
+  const { password: _, ...userWithoutPassword } = updatedUser;
+  return userWithoutPassword;
 };
 
 const getAllUsers = async (query: Record<string, unknown>) => {

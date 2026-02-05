@@ -3,12 +3,15 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   name       String?
-  password   String
+  password   String? 
   email      String?
   phone      String?
   role       String   @default("USER")
   image      String   @default("")
   gender     EGender  @default(OTHER)
+  google_id  String?   @default("") 
+  facebook_id String?  @default("") 
+  apple_id    String?  @default("")
 
   is_deleted             Boolean      @default(false)
   is_verified            Boolean      @default(false)

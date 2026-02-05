@@ -1,8 +1,8 @@
-import { PrismaClient } from '@/../prisma/client/client';
+import { PrismaClient, Prisma, type ResetToken } from '../../../prisma/client/client';
+import { EGender } from '../../../prisma/client/enums';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import config from '@/config';
-export * from '@/../prisma/client/client';
 
 /**
  * Prisma Client instance
@@ -14,3 +14,6 @@ export const prisma = new PrismaClient({
     }),
   ),
 });
+
+export { Prisma, EGender };
+export type { ResetToken };

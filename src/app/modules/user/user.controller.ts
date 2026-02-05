@@ -69,7 +69,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'User retrived successfully',
+    message: 'User retrieved successfully',
     data: result,
   });
 });
