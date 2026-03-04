@@ -37,9 +37,14 @@ const loginUserFromDB = async (payload: ILoginData) => {
   }
 
   //check match password
-  if (!(await bcrypt.compare(password, isExistUser.password))) {
+   if (
+    password &&
+    isExistUser?.password &&
+    !(await bcrypt.compare(password, isExistUser.password))
+  ) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
   }
+
 
   const tokenPayload = {
     id: isExistUser.id,
@@ -266,6 +271,7 @@ const changePasswordToDB = async (
   //current password match
   if (
     current_password &&
+    isExistUser.password &&
     !(await bcrypt.compare(current_password, isExistUser.password))
   ) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Password is incorrect');
