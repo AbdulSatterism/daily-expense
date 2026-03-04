@@ -7,6 +7,7 @@ import { EGender } from '../../../prisma/client/enums';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import config from '@/config';
+export * from '../../../prisma/client/client';
 
 const pool = new pg.Pool({
   connectionString: config.database_url,
