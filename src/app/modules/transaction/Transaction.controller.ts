@@ -41,20 +41,34 @@ const getTransactionSummary = catchAsync(async (req, res) => {
 });
 
 
-// const getMonthlyTrend = catchAsync(async (req, res) => {
-//     const result = await TransactionService.getMonthlyTrend(req.user.id);
+const getMonthlyTrend = catchAsync(async (req, res) => {
+    const result = await TransactionService.getMonthlyTrend(req.user.id);
 
-//     sendResponse(res, {
-//         success: true,
-//         statusCode: StatusCodes.OK,
-//         message: 'Monthly trend retrieved successfully',
-//         data: result,
-//     });
-// });
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Monthly trend retrieved successfully',
+        data: result,
+    });
+});
+
+const monthlyFinanceList = catchAsync(async (req, res) => {
+
+    const result = await TransactionService.monthlyFinanceList(req.user.id,req.query);
+    
+    sendResponse(res, { 
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Monthly expense retrieved successfully',
+        data: result,
+    });
+});
 
 
 export const TransactionController = {
   createTransaction,
   getTransactionSummary,
-  getTransactionById
+  getTransactionById,
+  getMonthlyTrend,
+  monthlyFinanceList,
 };

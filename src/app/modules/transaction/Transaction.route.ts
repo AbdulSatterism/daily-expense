@@ -16,11 +16,7 @@ router.post(
   TransactionController.createTransaction,
 );
 
-router.get(
-  '/:id',
-  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  TransactionController.getTransactionById,
-);
+
 
 
 router.get(
@@ -28,10 +24,26 @@ router.get(
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   TransactionController.getTransactionSummary,
 );
-// router.get(
-//   '/trend',
-//   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-//   TransactionController.getMonthlyTrend,
-// );
+
+router.get(
+  '/trend',
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  TransactionController.getMonthlyTrend,
+);
+
+router.get(
+  '/monthly-expense',
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  TransactionController.monthlyFinanceList,
+);
+
+
+
+router.get(
+  '/:id',
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  TransactionController.getTransactionById,
+);
+
 
 export const TransactionRoutes = router;

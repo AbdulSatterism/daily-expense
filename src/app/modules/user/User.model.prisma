@@ -20,6 +20,7 @@ model User {
   auth_expire_at         DateTime?
   resetTokens            ResetToken[]
   transactions           Transaction[]
+  reminders              Reminder[]
 
   @@map("users")
 }

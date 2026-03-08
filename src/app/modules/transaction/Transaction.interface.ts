@@ -6,18 +6,20 @@ export enum TransactionType {
 }
 
 export enum Category {
-        'GROCERIES',
-        'RENT',
-        'TRANSPORT',
-        'UTILITIES',
-        'SHOPPING',
-        'HEALTH',
-        'FOOD',
-        'GAS',
-        'SALARY',
-        'BUSINESS',
-        'INVESTMENT',
-        'OTHER'
+    'GROCERIES',
+    'RENT',
+    'TRANSPORT',
+    'UTILITIES',
+    'SHOPPING',
+    'HEALTH',
+    'FOOD',
+    'GAS',
+    'SALARY',
+    'BUSINESS',
+    'INVESTMENT',
+    'OTHER',
+    'ZAKAT',
+    'TAX'
 }
 
 
