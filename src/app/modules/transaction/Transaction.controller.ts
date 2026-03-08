@@ -16,7 +16,45 @@ const createTransaction = catchAsync(async (req, res) => {
   });
 });
 
+const getTransactionById = catchAsync(async (req, res) => {
+
+    const result = await TransactionService.getTransactionById(req.user.id, req.params.id);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Transaction retrieved successfully',
+        data: result,
+    });
+});
+
+const getTransactionSummary = catchAsync(async (req, res) => {
+
+  const result = await TransactionService.getTransactionSummary(req.user.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Transaction summary retrieved successfully',
+    data: result,
+  });
+});
+
+
+// const getMonthlyTrend = catchAsync(async (req, res) => {
+//     const result = await TransactionService.getMonthlyTrend(req.user.id);
+
+//     sendResponse(res, {
+//         success: true,
+//         statusCode: StatusCodes.OK,
+//         message: 'Monthly trend retrieved successfully',
+//         data: result,
+//     });
+// });
+
 
 export const TransactionController = {
-  createTransaction
+  createTransaction,
+  getTransactionSummary,
+  getTransactionById
 };

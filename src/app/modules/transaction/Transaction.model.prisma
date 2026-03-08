@@ -17,6 +17,7 @@ enum Category {
   BUSINESS
   INVESTMENT
   OTHER
+  ZAKAT
 }
 
 
