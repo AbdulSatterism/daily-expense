@@ -38,6 +38,18 @@ router.get(
 );
 
 
+router.get(
+  '/finance-report',
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  TransactionController.getFinanceReport,
+);
+
+router.get(
+  '/dashboard-report',
+  auth(USER_ROLES.ADMIN),
+  TransactionController.dashboardHomeReport,
+);  
+
 
 router.get(
   '/:id',

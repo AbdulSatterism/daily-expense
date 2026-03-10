@@ -12,6 +12,7 @@ model User {
   google_id   String?  @default("")
   facebook_id String?  @default("")
   apple_id    String?  @default("")
+  online      Boolean  @default(false)
 
   is_deleted             Boolean       @default(false)
   is_verified            Boolean       @default(false)

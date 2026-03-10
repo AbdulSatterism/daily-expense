@@ -10,7 +10,6 @@ import { errorLogger, logger } from './shared/logger';
 import seedAdmin from './DB';
 import { prisma } from '@/util/db';
 
-
 process.on('uncaughtException', error => {
   errorLogger.error('Uncaught Exception Detected', error);
   process.exit(1);
@@ -18,18 +17,13 @@ process.on('uncaughtException', error => {
 
 let server: any;
 
-
-
 async function main() {
   try {
-   
     await prisma.$connect();
     logger.info(chalk.green('🚀 Database connected successfully'));
 
     // seed admin
     await seedAdmin();
-
-   
 
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
@@ -52,7 +46,6 @@ async function main() {
 
     //@ts-ignore
     global.io = io;
-
   } catch (error) {
     errorLogger.error(chalk.red('🤢 Failed to start server'), error);
     process.exit(1);
@@ -60,8 +53,6 @@ async function main() {
 }
 
 main();
-
-
 
 // process.on('unhandledRejection', error => {
 //   errorLogger.error('Unhandled Rejection Detected', error);
@@ -75,8 +66,6 @@ main();
 //     process.exit(1);
 //   }
 // });
-
-
 
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received');

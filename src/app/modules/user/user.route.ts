@@ -34,12 +34,12 @@ router.get(
   UserController.getSingleUser,
 );
 
-// get user by search by phone
-// router.get(
-//   '/user-search',
-//   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-//   UserController.searchByPhone,
-// );
+// searchAllUser
+router.get(
+  '/',
+  auth(USER_ROLES.ADMIN),
+  UserController.searchAllUser,
+);
 
 router.get(
   '/profile',

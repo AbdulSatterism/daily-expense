@@ -65,10 +65,35 @@ const monthlyFinanceList = catchAsync(async (req, res) => {
 });
 
 
+const getFinanceReport = catchAsync(async (req, res) => {
+
+    const result = await TransactionService.getFinanceReport(req.user.id, req.query);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Finance report retrieved successfully',
+        data: result,
+    });
+});
+
+
+const dashboardHomeReport = catchAsync(async (req, res) => {
+
+    const result = await TransactionService.dashboardHomeReport(req.user.id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Dashboard report retrieved successfully',
+        data: result,
+    });
+});
+
 export const TransactionController = {
   createTransaction,
   getTransactionSummary,
   getTransactionById,
   getMonthlyTrend,
   monthlyFinanceList,
+  getFinanceReport,
+    dashboardHomeReport,
 };

@@ -153,41 +153,78 @@ const getSingleUser = async (id: string) => {
   return result;
 };
 
-// search user by phone
-// const searchUserByPhone = async (searchTerm: string, userId: string) => {
-//   let result;
+const searchUsers = async (query: Record<string, unknown>, userId: string) => {
+  const { search, role, status, page, limit } = query;
 
-//   if (searchTerm) {
-//     result = await prisma.user.findMany({
-//       where: {
-//         phone: {
-//           contains: searchTerm,
-//           mode: 'insensitive',
-//         },
-//         id: {
-//           not: userId,
-//         },
-//       },
-//     });
-//   } else {
-//     result = await prisma.user.findMany({
-//       where: {
-//         id: {
-//           not: userId,
-//         },
-//       },
-//       take: 10,
-//     });
-//   }
+  const pages = parseInt((page as string) || '1', 10);
+  const size = parseInt((limit as string) || '10', 10);
+  const skip = (pages - 1) * size;
 
-//   return result;
-// };
+  const where: any = {
+    id: { not: userId },
+  };
+
+  if (search) {
+    where.OR = [
+      {
+        name: {
+          contains: search as string,
+          mode: 'insensitive',
+        },
+      },
+      {
+        email: {
+          contains: search as string,
+          mode: 'insensitive',
+        },
+      },
+      {
+        phone: {
+          contains: search as string,
+          mode: 'insensitive',
+        },
+      },
+    ];
+  }
+
+  if (role) {
+    where.role = role as string;
+  }
+
+  if (status !== undefined) {
+    if (typeof status === 'boolean') {
+      where.is_verified = status;
+    } else if (typeof status === 'string') {
+      where.is_verified = status.toLowerCase() === 'true';
+    }
+  }
+
+  const [result, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      skip,
+      take: size,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return {
+    data: result,
+    meta: {
+      page: pages,
+      limit: size,
+      totalPage: Math.ceil(total / size),
+      total,
+    },
+  };
+};
 
 export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
   updateProfileToDB,
   getSingleUser,
-
+searchUsers,
   getAllUsers,
 };

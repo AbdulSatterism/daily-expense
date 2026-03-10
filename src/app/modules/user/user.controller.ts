@@ -74,23 +74,22 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// search by phone number
-// const searchByPhone = catchAsync(async (req: Request, res: Response) => {
-//   const searchTerm = req.query.searchTerm;
-//   const userId = req?.user?.id;
+// search by 
+const searchAllUser = catchAsync(async (req: Request, res: Response) => {
+  const userId = req?.user?.id;
 
-//   const result = await UserService.searchUserByPhone(
-//     searchTerm as string,
-//     userId,
-//   );
+  const result = await UserService.searchUsers(
+    req.query,
+    userId,
+  );
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: StatusCodes.OK,
-//     message: 'get user by searching phone number',
-//     data: result,
-//   });
-// });
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'all user by search and filter',
+    data: result,
+  });
+});
 
 export const UserController = {
   createUser,
@@ -98,4 +97,5 @@ export const UserController = {
   updateProfile,
   getSingleUser,
   getAllUser,
+  searchAllUser
 };
