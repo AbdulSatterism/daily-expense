@@ -21,6 +21,7 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
     where: { email: payload.email },
   });
 
+  
   if (existingUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Email already used');
   }
