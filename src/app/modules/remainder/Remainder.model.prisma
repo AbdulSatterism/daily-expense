@@ -21,6 +21,11 @@ enum ReminderRepeat {
   MONTHLY
 }
 
+enum paidStatus {
+  PAID
+  UNPAID
+}
+
 model Reminder {
   id          String           @id @default(uuid())
 
@@ -31,6 +36,7 @@ model Reminder {
 
   due_date    DateTime
   repeat      ReminderRepeat   @default(NONE)
+  status      paidStatus?       @default(UNPAID)
 
   notes       String?
 

@@ -29,6 +29,8 @@ async function main() {
     // seed admin
     await seedAdmin();
 
+   
+
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
 
@@ -61,18 +63,18 @@ main();
 
 
 
-process.on('unhandledRejection', error => {
-  errorLogger.error('Unhandled Rejection Detected', error);
+// process.on('unhandledRejection', error => {
+//   errorLogger.error('Unhandled Rejection Detected', error);
 
-  if (server) {
-    server.close(async () => {
-      await prisma.$disconnect();
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
+//   if (server) {
+//     server.close(async () => {
+//       await prisma.$disconnect();
+//       process.exit(1);
+//     });
+//   } else {
+//     process.exit(1);
+//   }
+// });
 
 
 

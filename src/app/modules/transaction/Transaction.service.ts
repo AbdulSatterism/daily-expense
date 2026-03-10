@@ -159,11 +159,22 @@ const getMonthlyTrend = async (userId: string) => {
     {} as { [key: string]: number },
   );
 
+  const recentTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+    },
+    orderBy: {
+      date: 'desc',
+    },
+    take: 2,
+  });
+
   return {
     monthly_income: Number(monthlyIncome.toFixed(2)),
     monthly_expense: Number(totalExpense.toFixed(2)),
     weekly_trend: weeklyData,
     category_wise_expense: categoryPercentage,
+    recent_transactions: recentTransactions,
   };
 };
 
@@ -250,12 +261,7 @@ const monthlyFinanceList = async (userId: string, query: Record<string, unknown>
             monthly_expense: Number(monthlyTotal.toFixed(2)),
             previous_month_expense: Number(previousMonthTotal.toFixed(2)),
             percentage_change: Number(percentageChange.toFixed(2)),
-            expenses: transactions,
-            filters: {
-                month: Number(month),
-                year: Number(year),
-                category: category || null
-            }
+            expenses: transactions
         },
         meta: {
             page: pages,
