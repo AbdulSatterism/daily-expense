@@ -3,6 +3,8 @@ import { AuthRoutes } from '../app/modules/auth/auth.route';
 import { UserRoutes } from '../app/modules/user/user.route';
 import { TransactionRoutes } from '@/app/modules/transaction/Transaction.route';
 import { ReminderRoutes } from '@/app/modules/remainder/Remainder.route';
+import { ConsultationRoutes } from '@/app/modules/consultation/Consultation.route';
+import { GuestRoutes } from '@/app/modules/guest/Guest.route';
 
 const router = express.Router();
 
@@ -11,6 +13,8 @@ const apiRoutes = [
   { path: '/auth', route: AuthRoutes },
   { path: '/transaction', route: TransactionRoutes },
   { path: '/reminder', route: ReminderRoutes },
+  { path: '/consultation', route: ConsultationRoutes },
+  { path: '/guest', route: GuestRoutes },
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));

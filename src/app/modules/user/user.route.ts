@@ -11,6 +11,17 @@ router.post(
   UserController.createUser,
 );
 
+router.post(
+  '/create-admin',
+  auth(USER_ROLES.ADMIN),
+  UserController.createAdminFromDb,
+);
+
+router.post(
+  '/create-user',
+  UserController.createUser,
+);
+
 router.get('/all-user', auth(USER_ROLES.ADMIN), UserController.getAllUser);
 
 router.patch(
@@ -43,11 +54,23 @@ router.get(
   UserController.getUserProfile,
 );
 
+router.get(
+  '/all-admin',
+  auth(USER_ROLES.ADMIN),
+  UserController.getAllAdmin,
+);
+
 
 router.get(
   '/get-single-user/:id',
   auth(USER_ROLES.ADMIN),
   UserController.getSingleUser,
+);
+
+router.delete(
+  '/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.deleteUserByAdmin,
 );
 
 

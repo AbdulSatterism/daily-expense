@@ -1,0 +1,19 @@
+
+
+
+model Consultation {
+  id             String   @id @default(uuid())
+
+  appointment_date DateTime
+  appointment_time String
+  name      String
+  email          String
+  phone String
+
+  capital_range  String?
+
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("consultations")
+}

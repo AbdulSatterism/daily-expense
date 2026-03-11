@@ -91,11 +91,51 @@ const searchAllUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+const getAllAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getAllAdmin();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'all admin retrieved successfully',
+    data: result,
+  });
+});
+
+
+const deleteUserByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.deleteUserByAdmin(req.params.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User deleted successfully',
+    data: result,
+  });
+});
+
+const createAdminFromDb = catchAsync(async (req: Request, res: Response) => {
+  const value = {
+    ...req.body,
+  };
+    const result = await UserService.createAdminFromDb(value);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Admin created successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   getUserProfile,
   updateProfile,
+  createAdminFromDb,
   getSingleUser,
   getAllUser,
-  searchAllUser
+  searchAllUser,
+  getAllAdmin,
+  deleteUserByAdmin,
 };

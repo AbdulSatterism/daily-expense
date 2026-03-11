@@ -21,7 +21,6 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
     where: { email: payload.email },
   });
 
-  
   if (existingUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Email already used');
   }
@@ -70,6 +69,40 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
 
   const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
+};
+
+// create admin by admin =>
+const createAdminFromDb = async (payload: TCreateUserArgs) => {
+ 
+  const existingUser = await prisma.user.findFirst({
+    where: { email: payload.email },
+  });
+
+  if (existingUser) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Email already used');
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(
+    payload.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  const result = await prisma.user.create({
+    data: {
+      ...payload,
+      password: hashedPassword,
+      role: USER_ROLES.ADMIN,
+      is_verified: true,
+    },
+  });
+
+  if (!result) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create admin');
+  }
+
+  const { password: _, ...adminWithoutPassword } = result;
+  return adminWithoutPassword;
 };
 
 const getAllUsers = async (query: Record<string, unknown>) => {
@@ -220,11 +253,36 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
   };
 };
 
+// all admin by admin =>
+
+const getAllAdmin = async () => {
+  const result = await prisma.user.findMany({
+    where: {
+      role: USER_ROLES.ADMIN,
+    },
+    orderBy: { created_at: 'desc' },
+  });
+
+  return result;
+};
+
+// user delete by admin =>
+
+const deleteUserByAdmin = async (id: string) => {
+  const result = await prisma.user.delete({
+    where: { id },
+  });
+  return result;
+};
+
 export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
   updateProfileToDB,
   getSingleUser,
-searchUsers,
+  searchUsers,
   getAllUsers,
+  getAllAdmin,
+  deleteUserByAdmin,
+  createAdminFromDb,
 };

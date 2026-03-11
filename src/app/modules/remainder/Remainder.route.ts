@@ -24,7 +24,7 @@ router.get(
 );
 
 
-router.get(
+router.post(
   '/:id',
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   ReminderController.getReminderAndMakePaid,
