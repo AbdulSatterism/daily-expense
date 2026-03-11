@@ -28,11 +28,7 @@ router.get(
 
 // router.get('/get-all-users', auth(USER_ROLES.ADMIN), UserController.getAllUser);
 
-router.get(
-  '/get-single-user/:id',
-  auth(USER_ROLES.ADMIN),
-  UserController.getSingleUser,
-);
+
 
 // searchAllUser
 router.get(
@@ -46,5 +42,13 @@ router.get(
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   UserController.getUserProfile,
 );
+
+
+router.get(
+  '/get-single-user/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.getSingleUser,
+);
+
 
 export const UserRoutes = router;

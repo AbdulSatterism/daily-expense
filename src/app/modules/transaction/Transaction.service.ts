@@ -87,6 +87,7 @@ const getTransactionSummary = async (userId: string) => {
   const incomeAmount = (totalIncome._sum.amount as unknown as number) || 0;
   const expenseAmount = (totalExpense._sum.amount as unknown as number) || 0;
   const revenue = incomeAmount - expenseAmount;
+  
 
   return {
     income: Number(incomeAmount.toFixed(2)),
@@ -260,6 +261,7 @@ const monthlyFinanceList = async (userId: string, query: Record<string, unknown>
     return {
         success: true,
         data: {
+          total_expense: Number(monthlyTotal.toFixed(2)),
             monthly_expense: Number(monthlyTotal.toFixed(2)),
             previous_month_expense: Number(previousMonthTotal.toFixed(2)),
             percentage_change: Number(percentageChange.toFixed(2)),
@@ -541,7 +543,6 @@ const getFinanceReport = async (
 
 */
 
-// do all in here 
 
 const dashboardHomeReport = async (userId:string) => {
 const isAdmin = await prisma.user.findUnique({
@@ -592,6 +593,463 @@ if (!isAdmin || isAdmin?.role !== 'ADMIN') {
 }
 
 
+/*
+2. total revenue for specific user (sum of all income - sum of all expense)
+3. total expense for specific user (sum of all expense)
+
+4. total income for specific user (sum of all income)
+5. net revenue as profit or loss (total income - total expense)
+6. negetive cash flow for specific user (total expense - total income) if total expense > total income then only show this data otherwise show 0
+
+8. current year every month total income and expense for specific user (group by month and sum of income and expense in that month)
+
+9. last 30 days transation list for specific user (date, amount, type, category) with pagination (page and limit)
+
+*/
+
+const getFinanceReportForUser = async (userId: string, query: Record<string, unknown>) => {
+  const { month, year } = query;
+  const targetMonth = month ? getMonthNumber(month) : new Date().getMonth() + 1;
+  const targetYear = year ? (typeof year === 'number' ? year : parseInt(year as string, 10)) : new Date().getFullYear();
+
+  const startDate = new Date(targetYear, targetMonth - 1, 1);
+  const endDate = new Date(targetYear, targetMonth, 1);
+  
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+      date: { gte: startDate, lt: endDate },
+    },
+  }); 
+
+  let totalIncome = 0, totalExpense = 0;
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+    revenue: 0,
+  }));
+  const categoryExpense: Record<string, number> = {};
+
+  transactions.forEach(t => {
+    const amount = Number(t.amount);
+    if (t.type === 'INCOME') totalIncome += amount;
+    else totalExpense += amount;
+    const month = new Date(t.date).getMonth();
+    if (t.type === 'INCOME') {
+      monthlyData[month].income += amount;
+    } else {
+      monthlyData[month].expense += amount;
+      categoryExpense[t.category] = (categoryExpense[t.category] || 0) + amount;
+    }
+  });
+
+  monthlyData.forEach(m => {
+    m.revenue = m.income - m.expense;
+  });
+
+  const totalRevenue = totalIncome - totalExpense;
+  const negativeCashFlow = totalRevenue < 0 ? Math.abs(totalRevenue) : 0;
+  const categoryPercentage: Record<string, number> = {};
+  if (totalExpense > 0) {
+    for (const [cat, amt] of Object.entries(categoryExpense)) {
+      categoryPercentage[cat] = Number(((amt / totalExpense) * 100).toFixed(2));
+    }
+  }
+
+  
+  const last30DaysTransactions =  await prisma.transaction.findMany({
+      where: {
+        user_id: userId,
+        date: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      },
+      orderBy: { date: 'desc' },
+      take: 10, 
+    });
+
+  return {
+    total_income: Number(totalIncome.toFixed(2)),
+    total_expense: Number(totalExpense.toFixed(2)),
+    total_revenue: Number(totalRevenue.toFixed(2)),
+    negative_cash_flow: Number(negativeCashFlow.toFixed(2)),
+    monthly_data: monthlyData.map(m => ({
+      month: m.month,
+      income: Number(m.income.toFixed(2)),
+      expense: Number(m.expense.toFixed(2)),
+      revenue: Number(m.revenue.toFixed(2)),
+    })),
+    category_wise_expense: categoryPercentage,
+    last_transactions:last30DaysTransactions
+  };
+}
+
+
+const incomeReportForUser = async (userId: string, query: Record<string, unknown>) => {
+  const { month, year, page, limit } = query;
+  const targetMonth = month ? getMonthNumber(month) : new Date().getMonth() + 1;
+  const targetYear = year ? (typeof year === 'number' ? year : parseInt(year as string, 10)) : new Date().getFullYear();
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Date boundaries for the target year
+  const startOfYear = new Date(targetYear, 0, 1);
+  const startOfNextYear = new Date(targetYear + 1, 0, 1);
+
+  // Total income for the year
+  const totalIncome = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  // Current month income (already year‑scoped by targetYear)
+  const currentMonthIncome = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: new Date(targetYear, targetMonth - 1, 1),
+        lt: new Date(targetYear, targetMonth, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  // Previous month income (handles year rollover automatically)
+  const previousMonthIncome = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: new Date(targetYear, targetMonth - 2, 1),
+        lt: new Date(targetYear, targetMonth - 1, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalIncomeAmount = Number(totalIncome._sum.amount) || 0;
+  const currentMonthIncomeAmount = Number(currentMonthIncome._sum.amount) || 0;
+  const previousMonthIncomeAmount = Number(previousMonthIncome._sum.amount) || 0;
+
+  let growthPercentage = 0;
+  if (previousMonthIncomeAmount > 0) {
+    growthPercentage = Number(
+      (((currentMonthIncomeAmount - previousMonthIncomeAmount) / previousMonthIncomeAmount) * 100).toFixed(2)
+    );
+  }
+
+  // Recent transactions filtered by the target year
+  const recentTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    orderBy: {
+      date: 'desc',
+    },
+    skip,
+    take: size,
+  });
+
+  // Total count for pagination (also year‑filtered)
+  const total = await prisma.transaction.count({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+  });
+
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    total_income: Number(totalIncomeAmount.toFixed(2)),
+    average_monthly_income: Number((totalIncomeAmount / 12).toFixed(2)),
+    growth_vs_previous_month: {
+      percentage: growthPercentage,
+      income: Number(currentMonthIncomeAmount.toFixed(2)),
+    },
+    recent_transactions: recentTransactions,
+    meta: {
+      page: pages,
+      limit: size,
+      totalPage,
+      total,
+    },
+  };
+};
+
+
+const expenseReportForUser = async (userId: string, query: Record<string, unknown>) => {
+  const { month, year, page, limit } = query;
+  const targetMonth = month ? getMonthNumber(month) : new Date().getMonth() + 1;
+  const targetYear = year ? (typeof year === 'number' ? year : parseInt(year as string, 10)) : new Date().getFullYear();
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Date boundaries for the target year
+  const startOfYear = new Date(targetYear, 0, 1);
+  const startOfNextYear = new Date(targetYear + 1, 0, 1);
+
+  // Total expense for the year
+  const totalExpense = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  // Current month expense (already year‑scoped by targetYear)
+  const currentMonthExpense = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: new Date(targetYear, targetMonth - 1, 1),
+        lt: new Date(targetYear, targetMonth, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  // Previous month expense (handles year rollover automatically)
+  const previousMonthExpense = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: new Date(targetYear, targetMonth - 2, 1),
+        lt: new Date(targetYear, targetMonth - 1, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalExpenseAmount = Number(totalExpense._sum.amount) || 0;
+  const currentMonthExpenseAmount = Number(currentMonthExpense._sum.amount) || 0;
+  const previousMonthExpenseAmount = Number(previousMonthExpense._sum.amount) || 0;
+
+  let growthPercentage = 0;
+  if (previousMonthExpenseAmount > 0) {
+    growthPercentage = Number(
+      (((currentMonthExpenseAmount - previousMonthExpenseAmount) / previousMonthExpenseAmount) * 100).toFixed(2)
+    );
+  }
+
+  // Recent transactions filtered by the target year
+  const recentTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    orderBy: {
+      date: 'desc',
+    },
+    skip,
+    take: size,
+  });
+
+  // Total count for pagination (also year‑filtered)
+  const total = await prisma.transaction.count({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+  });
+
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    total_expense: Number(totalExpenseAmount.toFixed(2)),
+    average_monthly_expense: Number((totalExpenseAmount / 12).toFixed(2)),
+    growth_vs_previous_month: {
+      percentage: growthPercentage,
+      expense: Number(currentMonthExpenseAmount.toFixed(2)),
+    },
+    recent_transactions: recentTransactions,
+    meta: {
+      page: pages,
+      limit: size,
+      totalPage,
+      total,
+    },
+  };
+};
+
+
+
+
+
+
+/*
+1. total revenue for specific user (sum of all income - sum of all expense)
+2. total expense for specific user (sum of all expense) 
+3. net profit percentage for specific user ((total income - total expense) / total income) * 100
+4. yearly all month income and expense for specific user (group by month and sum of income and expense in that month)
+5. all expense category wise expense percentage for specific user (group by category and sum of expense in that category and percentage from total expense)
+6. last 30 days transation list for specific user (date, amount, type, category) with pagination (page and limit)
+
+*/
+
+const profitAndLoss = async (userId: string, query: Record<string, unknown>) => {
+  const { year, page, limit } = query;
+  const targetYear = year ? (typeof year === 'number' ? year : parseInt(year as string, 10)) : new Date().getFullYear();
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Date boundaries for the target year
+  const startOfYear = new Date(targetYear, 0, 1);
+  const startOfNextYear = new Date(targetYear + 1, 0, 1);
+
+  // Total income and expense for the year
+  const totalIncome = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'INCOME',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalExpense = await prisma.transaction.aggregate({
+    where: {
+      user_id: userId,
+      type: 'EXPENSE',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalIncomeAmount = Number(totalIncome._sum.amount) || 0;
+  const totalExpenseAmount = Number(totalExpense._sum.amount) || 0;
+  const totalRevenue = totalIncomeAmount - totalExpenseAmount;
+  
+  // Net profit percentage
+  const netProfitPercentage = totalIncomeAmount > 0 
+    ? Number(((totalRevenue / totalIncomeAmount) * 100).toFixed(2))
+    : 0;
+
+  // Monthly income and expense for the year
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+  }));
+
+  const allTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+  });
+
+  const categoryExpense: Record<string, number> = {};
+
+  allTransactions.forEach(t => {
+    const amount = Number(t.amount);
+    const monthIndex = new Date(t.date).getMonth();
+
+    if (t.type === 'INCOME') {
+      monthlyData[monthIndex].income += amount;
+    } else {
+      monthlyData[monthIndex].expense += amount;
+      categoryExpense[t.category] = (categoryExpense[t.category] || 0) + amount;
+    }
+  });
+
+  // Category-wise expense percentage
+  const categoryPercentage: Record<string, number> = {};
+  if (totalExpenseAmount > 0) {
+    for (const [cat, amt] of Object.entries(categoryExpense)) {
+      categoryPercentage[cat] = Number(((amt / totalExpenseAmount) * 100).toFixed(2));
+    }
+  }
+
+  // Last 30 days transactions
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+
+  const recentTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+    },
+    orderBy: {
+      date: 'desc',
+    },
+    skip,
+    take: size,
+  });
+
+  const total = await prisma.transaction.count({
+    where: {
+      user_id: userId,
+      date: {
+        gte: last30Days,
+      },
+    },
+  });
+
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    total_revenue: Number(totalRevenue.toFixed(2)),
+    total_expense: Number(totalExpenseAmount.toFixed(2)),
+    total_income: Number(totalIncomeAmount.toFixed(2)),
+    net_profit_percentage: netProfitPercentage,
+    yearly_monthly_data: monthlyData.map(m => ({
+      month: m.month,
+      income: Number(m.income.toFixed(2)),
+      expense: Number(m.expense.toFixed(2)),
+    })),
+    category_wise_expense: categoryPercentage,
+    recent_transactions: recentTransactions,
+    meta: {
+      page: pages,
+      limit: size,
+      totalPage,
+      total,
+    },
+  };
+};
 
 
 export const TransactionService = {
@@ -602,4 +1060,8 @@ export const TransactionService = {
   monthlyFinanceList,
   getFinanceReport,
   dashboardHomeReport,
+  getFinanceReportForUser,
+  incomeReportForUser,
+  expenseReportForUser,
+  profitAndLoss,
 };

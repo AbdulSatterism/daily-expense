@@ -50,12 +50,37 @@ router.get(
   TransactionController.dashboardHomeReport,
 );  
 
+router.get(
+  '/report/:userId',
+  auth( USER_ROLES.ADMIN),
+  TransactionController.getFinanceReportForUser,
+);
+
+
+router.get(
+  '/income/:userId',
+  auth( USER_ROLES.ADMIN),
+  TransactionController.incomeReportForUser,
+);
+
+router.get(
+  '/expense/:userId',
+  auth( USER_ROLES.ADMIN),
+  TransactionController.expenseReportForUser,
+);
+
+router.get(
+  '/profit-loss/:userId',
+  auth( USER_ROLES.ADMIN),
+  TransactionController.profitAndLoss,
+);
 
 router.get(
   '/:id',
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   TransactionController.getTransactionById,
 );
+
 
 
 export const TransactionRoutes = router;
