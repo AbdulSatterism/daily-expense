@@ -17,6 +17,12 @@ router.get(
   ReminderController.getAllReminders,
 );
 
+router.get(
+  '/reports',
+  auth(USER_ROLES.ADMIN),
+  ReminderController.reminderReports,
+);
+
 
 router.get(
   '/:id',

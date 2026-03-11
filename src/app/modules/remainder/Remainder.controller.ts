@@ -44,10 +44,25 @@ const getReminderAndMakePaid = catchAsync(async (req, res) => {
 });
 
 
+const reminderReports = catchAsync(async (req, res) => {
+
+  const result = await ReminderService.reminderReports(req.query);
+  
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Reminder reports retrieved successfully',
+    data: result,
+    meta: result.meta,
+  });
+});
+
+
 
 
 export const ReminderController = {
   createReminder,
   getAllReminders,
   getReminderAndMakePaid,
+  reminderReports,
 };
