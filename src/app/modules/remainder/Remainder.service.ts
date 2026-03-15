@@ -170,12 +170,12 @@ const reminderReports = async (query: Record<string, unknown>) => {
   const reminders = await prisma.reminder.findMany({
     where: whereClause,
     skip,
-    take: limit,
+    take: Number(limit),
     orderBy: { due_date: 'asc' },
   });
 
   const totalReminders = await prisma.reminder.count({ where: whereClause });
-  const totalPage = Math.ceil(totalReminders / limit);
+  const totalPage = Math.ceil(totalReminders / Number(limit));
 
   return {
     total_reminder: totalCount,

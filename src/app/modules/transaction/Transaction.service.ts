@@ -1052,6 +1052,88 @@ const profitAndLoss = async (userId: string, query: Record<string, unknown>) => 
 };
 
 
+/*
+1. total revenue for specific user (sum of all income - sum of all expense)
+2. total expense for specific user (sum of all expense)
+3. total income for specific user (sum of all income)
+4. total expense in zakat category for specific user (sum of all expense in zakat category)
+5. current year 12 month income and expense data for specific user (group by month and sum of income and expense in that month)
+6. last 30 days transation list for specific user (date, amount, type, category) with pagination (page and limit)
+7. also pupulate user name, email, image in the response
+*/
+
+const userFinancialOverview = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { 
+      name: true,
+      email: true,
+      image: true,
+     },
+  });
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
+    const transactions = await prisma.transaction.findMany({
+    where: { user_id: userId },
+  });
+
+
+    let totalIncome = 0, totalExpense = 0, zakatExpense = 0;
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+  }));
+
+  transactions.forEach(t => {
+    const amount = Number(t.amount);
+    const monthIndex = new Date(t.date).getMonth();
+    if (t.type === 'INCOME') {
+      totalIncome += amount;
+      monthlyData[monthIndex].income += amount;
+    }
+      else {
+      totalExpense += amount;
+      monthlyData[monthIndex].expense += amount;
+      if (t.category.toUpperCase() === 'ZAKAT') {
+        zakatExpense += amount;
+      }
+    }
+  });
+
+  const totalRevenue = totalIncome - totalExpense;
+  const last30DaysTransactions = await prisma.transaction.findMany({
+    where: {
+      user_id: userId,
+      date: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+    },
+    orderBy: { date: 'desc' },
+    take: 10, 
+  });
+
+
+  return {
+    user: {
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    },
+    total_revenue: Number(totalRevenue.toFixed(2)),
+    total_expense: Number(totalExpense.toFixed(2)),
+    total_income: Number(totalIncome.toFixed(2)),
+    zakat_expense: Number(zakatExpense.toFixed(2)),
+    monthly_data: monthlyData.map(m => ({
+      month: m.month,
+      income: Number(m.income.toFixed(2)),
+      expense: Number(m.expense.toFixed(2)),
+    })),
+    recent_transactions: last30DaysTransactions,
+  };
+}   
+
+
 export const TransactionService = {
   createTransaction,
   getTransactionSummary,
@@ -1064,4 +1146,5 @@ export const TransactionService = {
   incomeReportForUser,
   expenseReportForUser,
   profitAndLoss,
+  userFinancialOverview,
 };

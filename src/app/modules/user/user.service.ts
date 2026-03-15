@@ -194,7 +194,6 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
   const skip = (pages - 1) * size;
 
   const where: any = {
-    id: { not: userId },
   };
 
   if (search) {

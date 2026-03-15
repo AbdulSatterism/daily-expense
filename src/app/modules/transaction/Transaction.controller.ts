@@ -146,6 +146,17 @@ const profitAndLoss = catchAsync(async (req, res) => {
   });
 });
 
+const userFinancialOverview = catchAsync(async (req, res) => {
+  const result = await TransactionService.userFinancialOverview(req.params.userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User financial overview retrieved successfully',
+    data: result,
+  });
+});
+
+
 export const TransactionController = {
   createTransaction,
   getTransactionSummary,
@@ -158,4 +169,5 @@ export const TransactionController = {
   incomeReportForUser,
     expenseReportForUser,
     profitAndLoss,
+    userFinancialOverview,
 };

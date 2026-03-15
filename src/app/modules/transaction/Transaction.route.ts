@@ -58,6 +58,12 @@ router.get(
 
 
 router.get(
+  '/overview/:userId',
+  auth( USER_ROLES.ADMIN),
+  TransactionController.userFinancialOverview,
+);
+
+router.get(
   '/income/:userId',
   auth( USER_ROLES.ADMIN),
   TransactionController.incomeReportForUser,
