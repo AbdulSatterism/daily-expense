@@ -194,6 +194,9 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
   const skip = (pages - 1) * size;
 
   const where: any = {
+    role: {
+      not: 'ADMIN',
+    },
   };
 
   if (search) {
@@ -217,6 +220,7 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
         },
       },
     ];
+   
   }
 
   if (role) {
