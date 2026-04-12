@@ -17,6 +17,17 @@ router.post(
 );
 
 
+router.get(
+  '/global-profit-loss',
+  auth(USER_ROLES.ADMIN),
+  TransactionController.globalProfitAndLoss,
+);
+
+router.get(
+  '/global-finance-overview',
+  auth(USER_ROLES.ADMIN),
+  TransactionController.globalFinanceOverview,
+);
 
 
 router.get(
@@ -86,6 +97,8 @@ router.get(
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   TransactionController.getTransactionById,
 );
+
+
 
 
 

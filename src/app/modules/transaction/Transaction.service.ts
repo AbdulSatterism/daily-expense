@@ -1052,6 +1052,131 @@ const profitAndLoss = async (userId: string, query: Record<string, unknown>) => 
 };
 
 
+const globalProfitAndLoss = async ( query: Record<string, unknown>) => {
+  const { year, page, limit } = query;
+  const targetYear = year ? (typeof year === 'number' ? year : parseInt(year as string, 10)) : new Date().getFullYear();
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Date boundaries for the target year
+  const startOfYear = new Date(targetYear, 0, 1);
+  const startOfNextYear = new Date(targetYear + 1, 0, 1);
+
+  // Total income and expense for the year
+  const totalIncome = await prisma.transaction.aggregate({
+    where: {
+      type: 'INCOME',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalExpense = await prisma.transaction.aggregate({
+    where: {
+      type: 'EXPENSE',
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalIncomeAmount = Number(totalIncome._sum.amount) || 0;
+  const totalExpenseAmount = Number(totalExpense._sum.amount) || 0;
+  const totalRevenue = totalIncomeAmount - totalExpenseAmount;
+  
+  // Net profit percentage
+  const netProfitPercentage = totalIncomeAmount > 0 
+    ? Number(((totalRevenue / totalIncomeAmount) * 100).toFixed(2))
+    : 0;
+
+  // Monthly income and expense for the year
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+  }));
+
+  const allTransactions = await prisma.transaction.findMany({
+    where: {
+      date: {
+        gte: startOfYear,
+        lt: startOfNextYear,
+      },
+    },
+  });
+
+  const categoryExpense: Record<string, number> = {};
+
+  allTransactions.forEach(t => {
+    const amount = Number(t.amount);
+    const monthIndex = new Date(t.date).getMonth();
+
+    if (t.type === 'INCOME') {
+      monthlyData[monthIndex].income += amount;
+    } else {
+      monthlyData[monthIndex].expense += amount;
+      categoryExpense[t.category] = (categoryExpense[t.category] || 0) + amount;
+    }
+  });
+
+  // Category-wise expense percentage
+  const categoryPercentage: Record<string, number> = {};
+  if (totalExpenseAmount > 0) {
+    for (const [cat, amt] of Object.entries(categoryExpense)) {
+      categoryPercentage[cat] = Number(((amt / totalExpenseAmount) * 100).toFixed(2));
+    }
+  }
+
+  // Last 30 days transactions
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+
+  const recentTransactions = await prisma.transaction.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+    skip,
+    take: size,
+  });
+
+  const total = await prisma.transaction.count({
+    where: {
+      date: {
+        gte: last30Days,
+      },
+    },
+  });
+
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    total_revenue: Number(totalRevenue.toFixed(2)),
+    total_expense: Number(totalExpenseAmount.toFixed(2)),
+    total_income: Number(totalIncomeAmount.toFixed(2)),
+    net_profit_percentage: netProfitPercentage,
+    yearly_monthly_data: monthlyData.map(m => ({
+      month: m.month,
+      income: Number(m.income.toFixed(2)),
+      expense: Number(m.expense.toFixed(2)),
+    })),
+    category_wise_expense: categoryPercentage,
+    recent_transactions: recentTransactions,
+    meta: {
+      page: pages,
+      limit: size,
+      totalPage,
+      total,
+    },
+  };
+};
+
+
 /*
 1. total revenue for specific user (sum of all income - sum of all expense)
 2. total expense for specific user (sum of all expense)
@@ -1134,6 +1259,69 @@ const userFinancialOverview = async (userId: string) => {
 }   
 
 
+const globalFinanceOverview = async ( query: Record<string, unknown>) => {
+
+  const {  page, limit } = query;
+
+  const transactions = await prisma.transaction.findMany({});
+
+  let totalIncome = 0, totalExpense = 0, zakatExpense = 0;
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+  }));
+
+  transactions.forEach(t => {
+    const amount = Number(t.amount);
+    const monthIndex = new Date(t.date).getMonth();
+    if (t.type === 'INCOME') {
+      totalIncome += amount;
+      monthlyData[monthIndex].income += amount;
+    }
+    else {
+      totalExpense += amount;
+      monthlyData[monthIndex].expense += amount;
+      if (t.category.toUpperCase() === 'ZAKAT') {
+        zakatExpense += amount;
+      }
+    }
+  });
+
+  const totalRevenue = totalIncome - totalExpense;
+  const filtered30DaysTransactions = transactions
+    .filter(t => t.date >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
+  
+  const total = filtered30DaysTransactions.length;
+  const pageNum = Number(page) || 1;
+  const limitNum = Number(limit) || 10;
+  const totalPage = Math.ceil(total / limitNum);
+  
+  const last30DaysTransactions = filtered30DaysTransactions
+    .slice((pageNum - 1) * limitNum, pageNum * limitNum);
+
+  return {
+    total_revenue: Number(totalRevenue.toFixed(2)),
+    total_expense: Number(totalExpense.toFixed(2)),
+    total_income: Number(totalIncome.toFixed(2)),
+    zakat_expense: Number(zakatExpense.toFixed(2)),
+    monthly_data: monthlyData.map(m => ({
+      month: m.month,
+      income: Number(m.income.toFixed(2)),
+      expense: Number(m.expense.toFixed(2)),
+    })),
+    recent_transactions: last30DaysTransactions,
+    meta: {
+      page: pageNum,
+      limit: limitNum,
+      totalPage,
+      total,
+    },
+  };
+}   
+
+
 export const TransactionService = {
   createTransaction,
   getTransactionSummary,
@@ -1147,4 +1335,6 @@ export const TransactionService = {
   expenseReportForUser,
   profitAndLoss,
   userFinancialOverview,
+  globalProfitAndLoss,
+  globalFinanceOverview,
 };

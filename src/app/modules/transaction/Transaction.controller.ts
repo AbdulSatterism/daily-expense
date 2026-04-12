@@ -156,6 +156,28 @@ const userFinancialOverview = catchAsync(async (req, res) => {
   });
 });
 
+const globalProfitAndLoss = catchAsync(async (req, res) => {
+  const result = await TransactionService.globalProfitAndLoss(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Global profit and loss report retrieved successfully',
+    data: result,
+    meta: result.meta,
+  });
+});
+
+const globalFinanceOverview = catchAsync(async (req, res) => {
+  const result = await TransactionService.globalFinanceOverview(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Global finance overview retrieved successfully',
+    data: result,
+    meta: result.meta,
+  });
+});
+
 
 export const TransactionController = {
   createTransaction,
@@ -170,4 +192,6 @@ export const TransactionController = {
     expenseReportForUser,
     profitAndLoss,
     userFinancialOverview,
+    globalProfitAndLoss,
+    globalFinanceOverview,
 };
