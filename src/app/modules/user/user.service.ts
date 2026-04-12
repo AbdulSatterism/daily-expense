@@ -278,6 +278,32 @@ const deleteUserByAdmin = async (id: string) => {
   return result;
 };
 
+// add document by Admin =>
+
+const addDocumentByAdmin = async ( userId: string, payload: TUpdateUserProfileArgs & { document?: string }) => {
+
+  const isExistUser = await prisma.user.findUnique({
+    where: {  id: userId },
+  });
+
+  if (!isExistUser) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+
+
+  if (payload.document && isExistUser.document) {
+    unlinkFile(isExistUser.document);
+  }
+
+  const updateDoc = await prisma.user.update({
+    where: { id: userId },
+    data: { document: payload.document },
+  });
+
+  return updateDoc;
+};
+
 export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
@@ -288,4 +314,5 @@ export const UserService = {
   getAllAdmin,
   deleteUserByAdmin,
   createAdminFromDb,
+  addDocumentByAdmin,
 };

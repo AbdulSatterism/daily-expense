@@ -42,9 +42,33 @@ const singleApplication = catchAsync(async (req, res) => {
 });
 
 
+const rejectGuest = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await GuestService.rejectGuest(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Capital application rejected successfully',
+        data: result,
+    });
+});
+
+const approvedGuestAndCreateUser = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await GuestService.approvedGuestAndCreateUser(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: 'Capital application approved and user created successfully',
+        data: result,
+    });
+});
+
 export const GuestController = {
   createGuestCapitalApplication,
     allApplications,
     singleApplication,
+    rejectGuest,
+    approvedGuestAndCreateUser
 };  
     

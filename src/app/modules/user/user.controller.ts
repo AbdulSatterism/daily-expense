@@ -128,6 +128,19 @@ const createAdminFromDb = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+const addDocumentByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.addDocumentByAdmin(req.params.id,req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Document added successfully',
+    data: result,
+  });
+});
+
+
 export const UserController = {
   createUser,
   getUserProfile,
@@ -138,4 +151,5 @@ export const UserController = {
   searchAllUser,
   getAllAdmin,
   deleteUserByAdmin,
+  addDocumentByAdmin,
 };

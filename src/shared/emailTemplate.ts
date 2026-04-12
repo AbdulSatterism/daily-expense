@@ -93,8 +93,55 @@ const consultation = (values: Iconsultation) => {
   return data;
 };
 
+interface IApproved{
+  name: string,
+  email: string,
+password: string,
+}
+
+const approvedGuest = (values: IApproved) => {
+  const data = {
+    to: values.email,
+    subject: 'Your Application Has Been Approved',
+    html: `<body style="margin:0; padding:20px; background:#f2f4f8; font-family:Arial,sans-serif;">
+    <div style="max-width:500px; margin:0 auto; background:#ffffff; border-radius:16px; padding:24px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+        
+        <!-- Header -->
+        <h2 style="color:#090A58; font-size:22px; margin:0 0 8px 0; text-align:center;">Your application approved by admin</h2>
+        
+        <!-- Greeting with name -->
+        <p style="color:#333; font-size:15px; text-align:center; margin-bottom:20px;">
+            Hello <strong>${values.name}</strong>, you are now able to use this app.
+        </p>
+
+        <!-- Credentials card (simple) -->
+        <div style="background:#f8f9fc; border-radius:12px; padding:16px; margin-bottom:20px;">
+            <p style="margin:0 0 12px 0; font-size:15px; color:#333;">
+                <strong style="color:#090A58; display:inline-block; width:80px;">Email:</strong> ${values.email}
+            </p>
+            <p style="margin:0 0 0 0; font-size:15px; color:#333;">
+                <strong style="color:#090A58; display:inline-block; width:80px;">Password:</strong> ${values.password}
+            </p>
+        </div>
+
+        <!-- Password change instruction -->
+        <p style="color:#444; font-size:14px; line-height:1.4; margin:0 0 10px 0; text-align:center;">
+            You can change your password from your profile after login.
+        </p>
+
+        <!-- Simple footer -->
+        <p style="color:#999; font-size:12px; text-align:center; margin:24px 0 0 0; border-top:1px solid #eee; padding-top:16px;">
+            © 2026 Your Company
+        </p>
+    </div>
+</body>`,
+  };
+  return data;
+};
+
 export const emailTemplate = {
   createAccount,
   resetPassword,
   consultation
+  ,approvedGuest
 };

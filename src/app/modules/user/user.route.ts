@@ -31,6 +31,13 @@ router.patch(
   UserController.updateProfile,
 );
 
+router.patch(
+  '/add-document/:id',
+  fileUploadHandler({ document: { fileType: 'documents', size: 50 * 1024 * 1024 } }),
+  auth(USER_ROLES.ADMIN),
+  UserController.addDocumentByAdmin,
+);
+
 router.get(
   '/user',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
@@ -72,6 +79,8 @@ router.delete(
   auth(USER_ROLES.ADMIN),
   UserController.deleteUserByAdmin,
 );
+
+
 
 
 export const UserRoutes = router;
