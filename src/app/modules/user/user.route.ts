@@ -33,9 +33,22 @@ router.patch(
 
 router.patch(
   '/add-document/:id',
-  fileUploadHandler({ document: { fileType: 'documents', size: 50 * 1024 * 1024 } }),
+  fileUploadHandler({
+  document: {
+    fileType: 'documents',
+    size: 50 * 1024 * 1024,
+    maxCount: 10,
+    default: [],
+  }
+}),
   auth(USER_ROLES.ADMIN),
   UserController.addDocumentByAdmin,
+);
+
+router.delete(
+  '/delete-document/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.deleteDocumentByAdmin,
 );
 
 router.get(

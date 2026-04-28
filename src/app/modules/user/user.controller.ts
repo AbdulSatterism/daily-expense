@@ -130,12 +130,27 @@ const createAdminFromDb = catchAsync(async (req: Request, res: Response) => {
 
 
 const addDocumentByAdmin = catchAsync(async (req: Request, res: Response) => {
+
   const result = await UserService.addDocumentByAdmin(req.params.id,req.body);
 
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Document added successfully',
+    data: result,
+  });
+});
+
+const deleteDocumentByAdmin = catchAsync(async (req, res) => {
+  const userId = req.params.id;
+  const documentIndex = Number(req.query.documentIndex);
+
+  const result = await UserService.deleteDocumentByAdmin(userId, documentIndex);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Document deleted successfully',
     data: result,
   });
 });
@@ -152,4 +167,5 @@ export const UserController = {
   getAllAdmin,
   deleteUserByAdmin,
   addDocumentByAdmin,
+    deleteDocumentByAdmin,
 };

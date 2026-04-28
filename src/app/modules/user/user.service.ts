@@ -280,29 +280,58 @@ const deleteUserByAdmin = async (id: string) => {
 
 // add document by Admin =>
 
-const addDocumentByAdmin = async ( userId: string, payload: TUpdateUserProfileArgs & { document?: string }) => {
-
-  const isExistUser = await prisma.user.findUnique({
-    where: {  id: userId },
+const addDocumentByAdmin = async (
+  userId: string,
+  payload: { document?: string[] }
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { document: true },
   });
 
-  if (!isExistUser) {
+  if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
 
+  const mergedDocs = Array.from(
+    new Set([...(user.document ?? []), ...(payload.document ?? [])])
+  );
 
-
-  if (payload.document && isExistUser.document) {
-    unlinkFile(isExistUser.document);
-  }
-
-  const updateDoc = await prisma.user.update({
+  return prisma.user.update({
     where: { id: userId },
-    data: { document: payload.document },
+    data: {
+      document: mergedDocs,
+    },
+  });
+};
+
+// delete specific document by Admin, document has index so it can be index wise =>
+
+const deleteDocumentByAdmin = async (
+  userId: string,
+  documentIndex: number
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { document: true },
   });
 
-  return updateDoc;
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  const updatedDocs = (user.document ?? []).filter((_, index) => index !== documentIndex);
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      document: updatedDocs,
+    },
+  });
 };
+
+
+
 
 export const UserService = {
   createUserFromDb,
@@ -315,4 +344,5 @@ export const UserService = {
   deleteUserByAdmin,
   createAdminFromDb,
   addDocumentByAdmin,
+  deleteDocumentByAdmin,
 };
