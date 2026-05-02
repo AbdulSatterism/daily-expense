@@ -9,8 +9,8 @@ const router = Router();
 router.post(
   '/',
   fileUploadHandler({
-    image: { fileType: 'images', size: 50 * 1024 * 1024 },
-    document: { fileType: 'documents', size: 50 * 1024 * 1024 },
+    image: { fileType: 'images', size: 50 * 1024 * 1024, maxCount: 1 },
+    document: { fileType: 'documents', size: 50 * 1024 * 1024, maxCount: 10 },
   }),
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   TransactionController.createTransaction,

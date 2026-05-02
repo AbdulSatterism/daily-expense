@@ -11,8 +11,6 @@ import { errorLogger, logger } from '../../shared/logger';
 import AppError from '../errors/AppError';
 import chalk from 'chalk';
 
-
-
 //  File validators with folders
 export const fileValidators = {
   images: { validator: /^image\//, folder: 'images' },
@@ -28,8 +26,8 @@ export const fileTypes = Object.keys(
 
 interface UploadFields {
   [field: string]: {
-default?: string[] | null;
-    maxCount?: number; 
+    default?: string[] | null;
+    maxCount?: number;
     size?: number; // in bytes
     fileType: (typeof fileTypes)[number];
   };
@@ -62,11 +60,11 @@ const fileUploader = (fields: UploadFields) =>
             file => `/${getFolderByMime(file.mimetype)}/${file.filename}`, //  Local path with folder
           );
 
-
-        req.body[field] = uploadedFiles;
+          req.body[field] =
+            fields[field].maxCount === 1 ? uploadedFiles[0] : uploadedFiles;
         } else {
           req.body[field] = fields[field].default;
-        }   
+        }
       });
     } catch (error) {
       errorLogger.error(error);
