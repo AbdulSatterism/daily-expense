@@ -25,6 +25,18 @@ const createConsultation = async (payload: IConsultation) => {
 
   await emailHelper.sendEmail(accountEmailTemplate);
 
+// send confirmation email to user
+  const confirmationEmailTemplate = emailTemplate.confirmationConsultation({
+   name: result?.name || 'Guest',
+    admin_email: config.email.from || '',
+    email: result.email,
+    phone: result.phone,
+    appointment_date: result.appointment_date.toISOString().split('T')[0],
+    appointment_time: result.appointment_time,
+  });
+
+  await emailHelper.sendEmail(confirmationEmailTemplate);
+
   return result;
 };
 

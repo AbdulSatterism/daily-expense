@@ -37,14 +37,13 @@ const resetPassword = (values: IResetPassword) => {
   return data;
 };
 
-
-interface Iconsultation{
-  name: string,
-  admin_email: string,
-  email: string,
-  phone: string,
-  appointment_date: string,
-  appointment_time: string
+interface Iconsultation {
+  name: string;
+  admin_email: string;
+  email: string;
+  phone: string;
+  appointment_date: string;
+  appointment_time: string;
 }
 
 const consultation = (values: Iconsultation) => {
@@ -93,10 +92,71 @@ const consultation = (values: Iconsultation) => {
   return data;
 };
 
-interface IApproved{
-  name: string,
-  email: string,
-password: string,
+
+interface IConfirmation {
+  name: string;
+  admin_email: string;
+  email: string;
+  phone: string;
+  appointment_date: string;
+  appointment_time: string;
+}
+
+const confirmationConsultation = (values: IConfirmation) => {
+  const data = {
+    to: values.email,
+    subject: 'Consultation Details',
+    html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px; color: #555;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        
+        <!-- Heading -->
+        <h2 style="color: #090A58; font-size: 24px; margin: 0 0 10px 0; text-align: center;"> Congratulations, ${values.name}!</h2>
+        <p style="color: #555; font-size: 16px; line-height: 1.5; text-align: center; margin-bottom: 30px;">
+            Your consultation has been successfully booked. Please find your appointment details below.
+        </p>
+
+        <!-- Booking details card -->
+        <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <p style="margin: 10px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Name:</strong> ${values.name}
+            </p>
+            <p style="margin: 10px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Email:</strong> ${values.email}
+            </p>
+            <p style="margin: 10px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Phone:</strong> ${values.phone}
+            </p>
+           
+            <p style="margin: 10px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 140px; display: inline-block;">📅 Appointment Date:</strong> ${values.appointment_date}
+            </p>
+            <p style="margin: 10px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 140px; display: inline-block;">⏰ Appointment Time:</strong> ${values.appointment_time}
+            </p>
+        </div>
+        <!-- Need help section -->
+        <p style="color: #555; font-size: 14px; line-height: 1.5; text-align: center; margin: 20px 0 10px 0;">
+            Need to reschedule or have questions? Contact us at 
+            <a href="mailto:support@yourcompany.com" style="color: #090A58; text-decoration: none;">support@yourcompany.com</a>
+        </p>
+
+        <!-- Simple footer note -->
+        <p style="color: #777; font-size: 14px; line-height: 1.5; margin: 0; text-align: center;">
+            Thank you for choosing us. We look forward to assisting you!
+        </p>
+        <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 20px 0 0 0; text-align: center;">
+            © 2026 Your Company Name. All rights reserved.
+        </p>
+    </div>
+</body>`,
+  };
+  return data;
+};
+
+interface IApproved {
+  name: string;
+  email: string;
+  password: string;
 }
 
 const approvedGuest = (values: IApproved) => {
@@ -142,6 +202,7 @@ const approvedGuest = (values: IApproved) => {
 export const emailTemplate = {
   createAccount,
   resetPassword,
-  consultation
-  ,approvedGuest
+  consultation,
+  approvedGuest,
+confirmationConsultation,
 };
