@@ -137,7 +137,7 @@ const confirmationConsultation = (values: IConfirmation) => {
         <!-- Need help section -->
         <p style="color: #555; font-size: 14px; line-height: 1.5; text-align: center; margin: 20px 0 10px 0;">
             Need to reschedule or have questions? Contact us at 
-            <a href="mailto:support@yourcompany.com" style="color: #090A58; text-decoration: none;">support@yourcompany.com</a>
+            <a href="mailto:no-reply@bespoke-capital.co" style="color: #090A58; text-decoration: none;">no-reply@bespoke-capital.co</a>
         </p>
 
         <!-- Simple footer note -->
