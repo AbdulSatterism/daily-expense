@@ -140,7 +140,7 @@ const getUserProfileFromDB = async (user: JwtPayload) => {
   });
 
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   return isExistUser;
@@ -157,7 +157,7 @@ const updateProfileToDB = async (
   });
 
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   if (!isExistUser.is_verified) {
@@ -290,7 +290,7 @@ const addDocumentByAdmin = async (
   });
 
   if (!user) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   const mergedDocs = Array.from(
@@ -317,7 +317,7 @@ const deleteDocumentByAdmin = async (
   });
 
   if (!user) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   const updatedDocs = (user.document ?? []).filter((_, index) => index !== documentIndex);

@@ -25,7 +25,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
     where: { email },
   });
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   //check verified and status
@@ -83,7 +83,7 @@ const forgetPasswordToDB = async (email: string) => {
   });
 
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   //send mail
@@ -113,7 +113,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   });
 
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   if (!one_time_code) {
@@ -265,7 +265,7 @@ const changePasswordToDB = async (
     where: { id: user.id },
   });
   if (!isExistUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
   //current password match
