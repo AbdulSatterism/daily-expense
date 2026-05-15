@@ -61,20 +61,20 @@ const consultation = (values: Iconsultation) => {
 
         <!-- Consultation details card -->
         <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom : 30px;">
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Name:</strong> ${values.name}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Email:</strong> ${values.email}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Phone:</strong> ${values.phone}
             </p>
            
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Date:</strong> ${values.appointment_date}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Time:</strong> ${values.appointment_time}
             </p>
         </div>
@@ -117,20 +117,20 @@ const confirmationConsultation = (values: IConfirmation) => {
 
         <!-- Booking details card -->
         <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Name:</strong> ${values.name}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Email:</strong> ${values.email}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Phone:</strong> ${values.phone}
             </p>
            
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Date:</strong> ${values.appointment_date}
             </p>
-            <p style="margin: 4px 0; font-size: 16px; color: #333;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
                 <strong style="color: #090A58; min-width: 80px; display: inline-block;">Time:</strong> ${values.appointment_time}
             </p>
         </div>
