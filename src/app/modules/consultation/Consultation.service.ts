@@ -13,10 +13,9 @@ const createConsultation = async (payload: IConsultation) => {
 
 // need to send email to admin and user about the consultation details
 
-  // send email verification
   const accountEmailTemplate = emailTemplate.consultation({
     name: result?.name || 'Guest',
-    admin_email: config.email.from || '',
+    admin_email: config.sub_mail as string,
     email: result.email,
     phone: result.phone,
     appointment_date: result.appointment_date.toISOString().split('T')[0],
@@ -28,7 +27,7 @@ const createConsultation = async (payload: IConsultation) => {
 // send confirmation email to user
   const confirmationEmailTemplate = emailTemplate.confirmationConsultation({
    name: result?.name || 'Guest',
-    admin_email: config.email.from || '',
+    admin_email: config.email.from as string,
     email: result.email,
     phone: result.phone,
     appointment_date: result.appointment_date.toISOString().split('T')[0],
