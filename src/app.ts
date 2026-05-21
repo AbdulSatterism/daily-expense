@@ -14,10 +14,12 @@ app.use(Morgan.errorHandler);
 //body parser
 app.use(
   cors({
-    origin: '*',
+    origin:["*","https://dashboard.bespoke-capital.co"],
     credentials: true,
+
   }),
 );
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

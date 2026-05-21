@@ -60,22 +60,22 @@ const consultation = (values: Iconsultation) => {
         </p>
 
         <!-- Consultation details card -->
-        <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Name       :</strong> ${values.name}
+        <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom : 30px;">
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Name:</strong> ${values.name}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Email      :</strong> ${values.email}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Email:</strong> ${values.email}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Phone      :</strong> ${values.phone}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Phone:</strong> ${values.phone}
             </p>
            
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Date       :</strong> ${values.appointment_date}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Date:</strong> ${values.appointment_date}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Time       :</strong> ${values.appointment_time}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Time:</strong> ${values.appointment_time}
             </p>
         </div>
 
@@ -117,21 +117,21 @@ const confirmationConsultation = (values: IConfirmation) => {
 
         <!-- Booking details card -->
         <div style="background-color: #f4f4f8; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Name       :</strong> ${values.name}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Name:</strong> ${values.name}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Email      :</strong> ${values.email}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Email:</strong> ${values.email}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Phone      :</strong> ${values.phone}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Phone:</strong> ${values.phone}
             </p>
            
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Date       :</strong> ${values.appointment_date}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Date:</strong> ${values.appointment_date}
             </p>
-            <p style="margin: 10px 0; font-size: 16px; color: #333;">
-                <strong style="color: #090A58; min-width: 140px; display: inline-block;">Time       :</strong> ${values.appointment_time}
+            <p style="margin: 2px 0; font-size: 16px; color: #333;">
+                <strong style="color: #090A58; min-width: 70px; display: inline-block;">Time:</strong> ${values.appointment_time}
             </p>
         </div>
         <!-- Need help section -->
