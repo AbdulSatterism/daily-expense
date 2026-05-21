@@ -84,7 +84,7 @@ const consultation = (values: Iconsultation) => {
             This request was submitted via the consultation booking form.
         </p>
         <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 20px 0 0 0; text-align: center;">
-            © 2026 Your Company Name. All rights reserved.
+            © 2026 Bespoke Capital. All rights reserved.
         </p>
     </div>
 </body>`,
@@ -145,7 +145,7 @@ const confirmationConsultation = (values: IConfirmation) => {
             Thank you for choosing us. We look forward to assisting you!
         </p>
         <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 20px 0 0 0; text-align: center;">
-            © 2026 Your Company Name. All rights reserved.
+            © 2026 Bespoke Capital. All rights reserved.
         </p>
     </div>
 </body>`,
@@ -191,7 +191,7 @@ const approvedGuest = (values: IApproved) => {
 
         <!-- Simple footer -->
         <p style="color:#999; font-size:12px; text-align:center; margin:24px 0 0 0; border-top:1px solid #eee; padding-top:16px;">
-            © 2026 Your Company
+            © 2026 Bespoke Capital. All rights reserved.
         </p>
     </div>
 </body>`,
