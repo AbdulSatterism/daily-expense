@@ -162,7 +162,7 @@ const deleteStatusToggle = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'this user has been suspended',
+    message: `${result.is_deleted ? 'This user has been suspended' : 'This user is active'}`,
     data: result,
   });
 });
