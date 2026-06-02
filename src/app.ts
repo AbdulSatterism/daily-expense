@@ -14,7 +14,7 @@ app.use(Morgan.errorHandler);
 //body parser
 app.use(
   cors({
-    origin:["*","https://dashboard.bespoke-capital.co"],
+    origin:["*","https://dashboard.bespoke-capital.co","http://localhost:3000"],
     credentials: true,
 
   }),
