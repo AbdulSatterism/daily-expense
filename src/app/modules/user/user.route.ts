@@ -87,11 +87,19 @@ router.get(
   UserController.getSingleUser,
 );
 
+router.patch(
+  '/delete-status/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.deleteStatusToggle,
+);
+
 router.delete(
   '/:id',
   auth(USER_ROLES.ADMIN),
   UserController.deleteUserByAdmin,
 );
+
+
 
 
 

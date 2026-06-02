@@ -156,6 +156,17 @@ const deleteDocumentByAdmin = catchAsync(async (req, res) => {
 });
 
 
+const deleteStatusToggle = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.deleteStatusToggle(req.params.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'this user has been suspended',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   getUserProfile,
@@ -168,4 +179,5 @@ export const UserController = {
   deleteUserByAdmin,
   addDocumentByAdmin,
     deleteDocumentByAdmin,
+    deleteStatusToggle,
 };

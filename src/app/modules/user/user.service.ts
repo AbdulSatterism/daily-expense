@@ -105,6 +105,7 @@ const createAdminFromDb = async (payload: TCreateUserArgs) => {
   return adminWithoutPassword;
 };
 
+
 const getAllUsers = async (query: Record<string, unknown>) => {
   const { page, limit } = query;
   const pages = parseInt(page as string) || 1;
@@ -331,6 +332,19 @@ const deleteDocumentByAdmin = async (
 };
 
 
+// user delete status by admin =>
+
+const deleteStatusToggle = async (id: string) => {
+  const user = await prisma.user.findUnique({ where: { id }, select: { is_deleted: true } });
+  if (!user) throw new AppError(StatusCodes.NOT_FOUND, 'user not found');
+
+  const result = await prisma.user.update({
+    where: { id },
+    data: { is_deleted: !user.is_deleted },
+  });
+  return result;
+};
+
 
 
 export const UserService = {
@@ -345,4 +359,5 @@ export const UserService = {
   createAdminFromDb,
   addDocumentByAdmin,
   deleteDocumentByAdmin,
+  deleteStatusToggle,
 };

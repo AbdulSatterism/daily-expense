@@ -36,6 +36,13 @@ const loginUserFromDB = async (payload: ILoginData) => {
     );
   }
 
+  if (isExistUser.is_deleted) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'your account has been suspended, please contact with admin',
+    );
+  }
+
   //check match password
    if (
     password &&
