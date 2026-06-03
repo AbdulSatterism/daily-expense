@@ -9,7 +9,7 @@ model CapitalApplication {
   id String @id @default(uuid())
 
   name      String
-  email          String
+  email          String@unique
   phone String
 
   has_noa               Boolean @default(false)

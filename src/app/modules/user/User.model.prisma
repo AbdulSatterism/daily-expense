@@ -4,7 +4,7 @@ model User {
   updated_at  DateTime @updatedAt
   name        String?
   password    String?
-  email       String?
+  email       String@unique
   phone       String?
   role        String   @default("USER")
   image       String?  @default("")
