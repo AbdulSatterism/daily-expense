@@ -26,11 +26,22 @@ const allApplications = async (query: Record<string, unknown>) => {
         prisma.capitalApplication.findMany({
             skip,
             take: limit,
+            where: {
+                status: {
+                    not: 'APPROVED',
+                },
+            },
             orderBy: {
                 created_at: 'desc',
             },
         }),
-        prisma.capitalApplication.count(),
+        prisma.capitalApplication.count({
+            where: {
+                status: {
+                    not: 'APPROVED',
+                },
+            },
+        }),
     ]);
     
     return {
