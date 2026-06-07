@@ -209,6 +209,10 @@ const updateFinanceProfileByAdmin = async (
     include: { finance_profile: true },
   });
 
+// also update creditScore in user model if credit score is there in finance profile data =>
+
+
+
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
@@ -217,6 +221,13 @@ const updateFinanceProfileByAdmin = async (
     where: { id: user.finance_profile?.id },
     data: financeProfileData,
   });
+
+  if (financeProfileData.creditScore !== undefined) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { creditScore: (financeProfileData.creditScore) },
+  });
+}
 
   return updatedFinanceProfile;
 };
