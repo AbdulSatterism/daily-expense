@@ -32,6 +32,12 @@ router.patch(
 );
 
 router.patch(
+  '/update-finance-profile/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.updateFinanceProfileByAdmin,
+);
+
+router.patch(
   '/add-document/:id',
   fileUploadHandler({
   document: {

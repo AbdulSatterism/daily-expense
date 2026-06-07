@@ -23,6 +23,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password } = payload;
   const isExistUser = await prisma.user.findFirst({
     where: { email },
+    include: {finance_profile: true},
   });
   if (!isExistUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
@@ -117,6 +118,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
 
   const isExistUser = await prisma.user.findFirst({
     where: { email },
+    include: { finance_profile: true },
   });
 
   if (!isExistUser) {

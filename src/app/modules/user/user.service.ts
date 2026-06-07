@@ -36,6 +36,13 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
       ...payload,
       password: hashedPassword,
       role: USER_ROLES.USER,
+
+      finance_profile: {
+        create:{}
+      }
+    },
+    include: {
+      finance_profile: true,
     },
   });
 
@@ -60,6 +67,9 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
     data: {
       auth_one_time_code: otp,
       auth_expire_at: new Date(Date.now() + 20 * 60000),
+    },
+    include: {
+      finance_profile: true,
     },
   });
 
@@ -94,6 +104,12 @@ const createAdminFromDb = async (payload: TCreateUserArgs) => {
       password: hashedPassword,
       role: USER_ROLES.ADMIN,
       is_verified: true,
+        finance_profile: {
+        create:{}
+      }
+    },
+    include: {
+      finance_profile: true,
     },
   });
 
@@ -117,6 +133,7 @@ const getAllUsers = async (query: Record<string, unknown>) => {
       skip,
       take: size,
       orderBy: { created_at: 'desc' },
+      include: { finance_profile: true },
     }),
     prisma.user.count(),
   ]);
@@ -138,6 +155,7 @@ const getUserProfileFromDB = async (user: JwtPayload) => {
   const { id } = user;
   const isExistUser = await prisma.user.findUnique({
     where: { id },
+    include: { finance_profile: true },
   });
 
   if (!isExistUser) {
@@ -155,6 +173,7 @@ const updateProfileToDB = async (
 
   const isExistUser = await prisma.user.findUnique({
     where: { id },
+    include: { finance_profile: true },
   });
 
   if (!isExistUser) {
@@ -180,9 +199,33 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
+// update finance profile by admin only =>
+const updateFinanceProfileByAdmin = async (
+  userId: string,
+  financeProfileData: Record<string, unknown> 
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { finance_profile: true },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
+  }
+
+  const updatedFinanceProfile = await prisma.financeProfile.update({
+    where: { id: user.finance_profile?.id },
+    data: financeProfileData,
+  });
+
+  return updatedFinanceProfile;
+};
+
+
 const getSingleUser = async (id: string) => {
   const result = await prisma.user.findUnique({
     where: { id },
+    include: { finance_profile: true },
   });
   return result;
 };
@@ -242,6 +285,7 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
       skip,
       take: size,
       orderBy: { created_at: 'desc' },
+      include: { finance_profile: true },
     }),
     prisma.user.count({ where }),
   ]);
@@ -265,6 +309,7 @@ const getAllAdmin = async () => {
       role: USER_ROLES.ADMIN,
     },
     orderBy: { created_at: 'desc' },
+    include: { finance_profile: true },
   });
 
   return result;
@@ -360,4 +405,5 @@ export const UserService = {
   addDocumentByAdmin,
   deleteDocumentByAdmin,
   deleteStatusToggle,
+  updateFinanceProfileByAdmin,
 };

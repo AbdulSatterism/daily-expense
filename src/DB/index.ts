@@ -4,14 +4,25 @@ import config from '../config';
 import { USER_ROLES } from '../enums/user';
 import { logger } from '../shared/logger';
 import { EGender, Prisma, prisma } from '@/util/db';
+import bcrypt from 'bcryptjs';
+
+
+  const hashedPassword = await bcrypt.hash(
+    config.admin.password as string,
+    Number(config.bcrypt_salt_rounds),
+  );
 
 const superUser = {
   name: 'Super Admin',
   role: USER_ROLES.ADMIN,
   email: config.admin.email,
-  password: config.admin.password as string,
+  password: hashedPassword,
   is_verified: true,
   gender: EGender.MALE,
+
+  finance_profile: {
+    create: {},
+  },
 } satisfies Prisma.UserCreateArgs['data'];
 
 const seedAdmin = async () => {
@@ -23,6 +34,9 @@ const seedAdmin = async () => {
     if (!isExistSuperAdmin) {
       await prisma.user.create({
         data: superUser,
+        include: {
+          finance_profile: true,
+        },
       });
       logger.info(chalk.green('✔ admin created successfully!'));
     } else {

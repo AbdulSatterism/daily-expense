@@ -167,6 +167,20 @@ const deleteStatusToggle = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateFinanceProfileByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+ 
+  const result = await UserService.updateFinanceProfileByAdmin(userId, req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Finance profile updated successfully',
+    data: result,
+  });
+});
+
+
 export const UserController = {
   createUser,
   getUserProfile,
@@ -180,4 +194,5 @@ export const UserController = {
   addDocumentByAdmin,
     deleteDocumentByAdmin,
     deleteStatusToggle,
+    updateFinanceProfileByAdmin,
 };

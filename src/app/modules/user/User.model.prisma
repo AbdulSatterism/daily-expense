@@ -1,19 +1,40 @@
+enum EGender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ECreditScore {
+  AA
+  BB
+  CC
+  DD
+  EE
+  FF
+  GG
+  HH
+  HX
+  GX
+}
+
 model User {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id          String        @id @default(uuid())
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
   name        String?
   password    String?
-  email       String@unique
+  email       String        @unique
   phone       String?
-  role        String   @default("USER")
-  image       String?  @default("")
-  gender      EGender? @default(OTHER)
-  google_id   String?  @default("")
-  facebook_id String?  @default("")
-  apple_id    String?  @default("")
-  online      Boolean  @default(false)
-  document    String[] @default([])
+  creditScore ECreditScore? 
+  role        String        @default("USER")
+  image       String?       @default("")
+  gender      EGender?      @default(OTHER)
+  google_id   String?       @default("")
+  facebook_id String?       @default("")
+  apple_id    String?       @default("")
+  online      Boolean       @default(false)
+  document    String[]      @default([])
+  finance_profile FinanceProfile?
 
   is_deleted             Boolean       @default(false)
   is_verified            Boolean       @default(false)
@@ -27,8 +48,21 @@ model User {
   @@map("users")
 }
 
-enum EGender {
-  MALE
-  FEMALE
-  OTHER
+model FinanceProfile {
+  id String @id @default(uuid())
+
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  total_loan_amount        Decimal?   @default(0) @db.Decimal(12, 2)
+  loan_tenure       Int?       @default(0)
+  monthly_repayment_amount Decimal?   @default(0) @db.Decimal(12, 2)
+  loan_start_date          DateTime?
+  monthly_due_day          Int?     @default(0)
+  remaining_tenure  Int?       @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("finance_profiles")
 }

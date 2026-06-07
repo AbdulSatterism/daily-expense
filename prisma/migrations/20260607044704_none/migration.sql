@@ -19,6 +19,9 @@ CREATE TYPE "Category" AS ENUM ('GROCERIES', 'RENT', 'TRANSPORT', 'UTILITIES', '
 -- CreateEnum
 CREATE TYPE "EGender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
+-- CreateEnum
+CREATE TYPE "ECreditScore" AS ENUM ('AA', 'BB', 'CC', 'DD', 'EE', 'FF', 'GG', 'HH', 'HX', 'GX');
+
 -- CreateTable
 CREATE TABLE "consultations" (
     "id" TEXT NOT NULL,
@@ -105,8 +108,9 @@ CREATE TABLE "users" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "name" TEXT,
     "password" TEXT,
-    "email" TEXT,
+    "email" TEXT NOT NULL,
     "phone" TEXT,
+    "creditScore" "ECreditScore",
     "role" TEXT NOT NULL DEFAULT 'USER',
     "image" TEXT DEFAULT '',
     "gender" "EGender" DEFAULT 'OTHER',
@@ -123,6 +127,25 @@ CREATE TABLE "users" (
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateTable
+CREATE TABLE "finance_profiles" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "total_loan_amount" DECIMAL(12,2) DEFAULT 0,
+    "loan_tenure" INTEGER DEFAULT 0,
+    "monthly_repayment_amount" DECIMAL(12,2) DEFAULT 0,
+    "loan_start_date" TIMESTAMP(3),
+    "monthly_due_day" INTEGER DEFAULT 0,
+    "remaining_tenure" INTEGER DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "finance_profiles_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "capital_applications_email_key" ON "capital_applications"("email");
 
 -- CreateIndex
 CREATE INDEX "reminders_user_id_idx" ON "reminders"("user_id");
@@ -142,6 +165,12 @@ CREATE INDEX "transactions_date_idx" ON "transactions"("date");
 -- CreateIndex
 CREATE INDEX "transactions_type_idx" ON "transactions"("type");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "finance_profiles_user_id_key" ON "finance_profiles"("user_id");
+
 -- AddForeignKey
 ALTER TABLE "reminders" ADD CONSTRAINT "reminders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -150,3 +179,6 @@ ALTER TABLE "reset_tokens" ADD CONSTRAINT "reset_tokens_user_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "finance_profiles" ADD CONSTRAINT "finance_profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
