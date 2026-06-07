@@ -138,6 +138,7 @@ CREATE TABLE "finance_profiles" (
     "loan_start_date" TIMESTAMP(3),
     "monthly_due_day" INTEGER DEFAULT 0,
     "remaining_tenure" INTEGER DEFAULT 0,
+    "creditScore" "ECreditScore",
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

@@ -60,6 +60,7 @@ model FinanceProfile {
   loan_start_date          DateTime?
   monthly_due_day          Int?     @default(0)
   remaining_tenure  Int?       @default(0)
+  creditScore       ECreditScore?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

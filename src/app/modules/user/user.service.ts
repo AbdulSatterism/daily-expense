@@ -199,38 +199,6 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
-// update finance profile by admin only =>
-const updateFinanceProfileByAdmin = async (
-  userId: string,
-  financeProfileData: Record<string, unknown> 
-) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { finance_profile: true },
-  });
-
-// also update creditScore in user model if credit score is there in finance profile data =>
-
-
-
-  if (!user) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
-  }
-
-  const updatedFinanceProfile = await prisma.financeProfile.update({
-    where: { id: user.finance_profile?.id },
-    data: financeProfileData,
-  });
-
-  if (financeProfileData.creditScore !== undefined) {
-  await prisma.user.update({
-    where: { id: userId },
-    data: { creditScore: (financeProfileData.creditScore) },
-  });
-}
-
-  return updatedFinanceProfile;
-};
 
 
 const getSingleUser = async (id: string) => {
@@ -399,6 +367,51 @@ const deleteStatusToggle = async (id: string) => {
     data: { is_deleted: !user.is_deleted },
   });
   return result;
+};
+
+
+
+// update finance profile by admin only =>
+const updateFinanceProfileByAdmin = async (
+  userId: string,
+  financeProfileData: Record<string, unknown> 
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { finance_profile: true },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
+  }
+
+
+  const { creditScore, ...financeProfileUpdateData } = financeProfileData;
+
+  const updatedFinanceProfile = await prisma.$transaction(async (tx) => {
+    if (creditScore) {
+      await tx.user.update({
+        where: { id: userId },
+        data: { creditScore: creditScore  },
+      });
+    }
+
+    return await tx.financeProfile.update({
+      where: { id: user.finance_profile!.id },
+      data: financeProfileUpdateData,
+    });
+  });
+
+  return updatedFinanceProfile;
+
+
+  // const updatedFinanceProfile = await prisma.financeProfile.update({
+  //   where: { id: user.finance_profile?.id },
+  //   data: financeProfileData,
+  // });
+
+
+  // return updatedFinanceProfile;
 };
 
 
