@@ -36,13 +36,6 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
       ...payload,
       password: hashedPassword,
       role: USER_ROLES.USER,
-
-      finance_profile: {
-        create:{}
-      }
-    },
-    include: {
-      finance_profile: true,
     },
   });
 
@@ -67,9 +60,6 @@ const createUserFromDb = async (payload: TCreateUserArgs) => {
     data: {
       auth_one_time_code: otp,
       auth_expire_at: new Date(Date.now() + 20 * 60000),
-    },
-    include: {
-      finance_profile: true,
     },
   });
 
@@ -104,12 +94,6 @@ const createAdminFromDb = async (payload: TCreateUserArgs) => {
       password: hashedPassword,
       role: USER_ROLES.ADMIN,
       is_verified: true,
-        finance_profile: {
-        create:{}
-      }
-    },
-    include: {
-      finance_profile: true,
     },
   });
 
@@ -133,7 +117,6 @@ const getAllUsers = async (query: Record<string, unknown>) => {
       skip,
       take: size,
       orderBy: { created_at: 'desc' },
-      include: { finance_profile: true },
     }),
     prisma.user.count(),
   ]);
@@ -155,7 +138,7 @@ const getUserProfileFromDB = async (user: JwtPayload) => {
   const { id } = user;
   const isExistUser = await prisma.user.findUnique({
     where: { id },
-    include: { finance_profile: true },
+    // include: { finance_profile: true },
   });
 
   if (!isExistUser) {
@@ -173,7 +156,6 @@ const updateProfileToDB = async (
 
   const isExistUser = await prisma.user.findUnique({
     where: { id },
-    include: { finance_profile: true },
   });
 
   if (!isExistUser) {
@@ -204,7 +186,7 @@ const updateProfileToDB = async (
 const getSingleUser = async (id: string) => {
   const result = await prisma.user.findUnique({
     where: { id },
-    include: { finance_profile: true },
+    // include: { finance_profile: true },
   });
   return result;
 };
@@ -264,7 +246,7 @@ const searchUsers = async (query: Record<string, unknown>, userId: string) => {
       skip,
       take: size,
       orderBy: { created_at: 'desc' },
-      include: { finance_profile: true },
+      // include: { finance_profile: true },
     }),
     prisma.user.count({ where }),
   ]);
@@ -288,7 +270,7 @@ const getAllAdmin = async () => {
       role: USER_ROLES.ADMIN,
     },
     orderBy: { created_at: 'desc' },
-    include: { finance_profile: true },
+    // include: { finance_profile: true },
   });
 
   return result;
@@ -370,7 +352,7 @@ const deleteStatusToggle = async (id: string) => {
 };
 
 
-
+// TODO: update finance profile by admin only =>
 // update finance profile by admin only =>
 const updateFinanceProfileByAdmin = async (
   userId: string,
@@ -378,7 +360,7 @@ const updateFinanceProfileByAdmin = async (
 ) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { finance_profile: true },
+    // include: { finance_profile: true },
   });
 
   if (!user) {
@@ -396,10 +378,10 @@ const updateFinanceProfileByAdmin = async (
       });
     }
 
-    return await tx.financeProfile.update({
-      where: { id: user.finance_profile!.id },
-      data: financeProfileUpdateData,
-    });
+    // return await tx.financeProfile.update({
+    //   where: { id: user.finance_profile!.id },
+    //   data: financeProfileUpdateData,
+    // });
   });
 
   return updatedFinanceProfile;
@@ -413,6 +395,31 @@ const updateFinanceProfileByAdmin = async (
 
   // return updatedFinanceProfile;
 };
+
+
+
+//! financial profile create, update, and get all 
+
+const createFinanceProfile = async (userId: string, financeProfileData:any ) => {
+
+  financeProfileData.userId = userId;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
+  }
+
+  const financeProfile = await prisma.financeProfile.create({
+    data: financeProfileData,
+  });
+
+  return financeProfile;
+};
+
+
 
 
 
@@ -430,4 +437,5 @@ export const UserService = {
   deleteDocumentByAdmin,
   deleteStatusToggle,
   updateFinanceProfileByAdmin,
+  createFinanceProfile,
 };

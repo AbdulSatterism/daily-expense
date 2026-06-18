@@ -34,7 +34,7 @@ model User {
   apple_id    String?       @default("")
   online      Boolean       @default(false)
   document    String[]      @default([])
-  finance_profile FinanceProfile?
+  finance_profiles FinanceProfile[] @relation("UserFinanceProfiles")
 
   is_deleted             Boolean       @default(false)
   is_verified            Boolean       @default(false)
@@ -51,8 +51,8 @@ model User {
 model FinanceProfile {
   id String @id @default(uuid())
 
-  user_id String @unique
-  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+  user    User   @relation("UserFinanceProfiles", fields: [user_id], references: [id], onDelete: Cascade)
 
   total_loan_amount        Decimal?   @default(0) @db.Decimal(12, 2)
   loan_tenure       Int?       @default(0)

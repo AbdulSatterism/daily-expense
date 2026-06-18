@@ -8,3 +8,5 @@ export type TCreateUserArgs = z.infer<
 export type TUpdateUserProfileArgs = z.infer<
   typeof UserValidation.updateUserProfileSchema
 >['body'] & { image?: string };
+
+

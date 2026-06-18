@@ -19,10 +19,6 @@ const superUser = {
   password: hashedPassword,
   is_verified: true,
   gender: EGender.MALE,
-
-  finance_profile: {
-    create: {},
-  },
 } satisfies Prisma.UserCreateArgs['data'];
 
 const seedAdmin = async () => {
@@ -34,9 +30,6 @@ const seedAdmin = async () => {
     if (!isExistSuperAdmin) {
       await prisma.user.create({
         data: superUser,
-        include: {
-          finance_profile: true,
-        },
       });
       logger.info(chalk.green('✔ admin created successfully!'));
     } else {

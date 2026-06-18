@@ -79,13 +79,6 @@ const approvedGuestAndCreateUser = async (id: string) => {
       is_verified: true,
       password: hashedPassword,
       role: 'USER',
-
-       finance_profile: {
-        create:{}
-      }
-    },
-     include: {
-      finance_profile: true,
     },
     
   });
