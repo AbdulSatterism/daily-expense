@@ -133,10 +133,11 @@ CREATE TABLE "finance_profiles" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "total_loan_amount" DECIMAL(12,2) DEFAULT 0,
+    "bank_name" TEXT,
     "loan_tenure" INTEGER DEFAULT 0,
     "monthly_repayment_amount" DECIMAL(12,2) DEFAULT 0,
     "loan_start_date" TIMESTAMP(3),
-    "monthly_due_day" INTEGER DEFAULT 0,
+    "monthly_due_day" TIMESTAMP(3),
     "remaining_tenure" INTEGER DEFAULT 0,
     "creditScore" "ECreditScore",
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -168,9 +169,6 @@ CREATE INDEX "transactions_type_idx" ON "transactions"("type");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "finance_profiles_user_id_key" ON "finance_profiles"("user_id");
 
 -- AddForeignKey
 ALTER TABLE "reminders" ADD CONSTRAINT "reminders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
