@@ -145,10 +145,12 @@ const getUserProfileFromDB = async (user: JwtPayload) => {
     throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
-
+   // order by latest created finance profile
   const financeProfile = await prisma.financeProfile.findMany({
     where: { user_id: id },
+    orderBy: { created_at: 'desc' },
   });
+
 
   return {
     ...isExistUser,
@@ -201,8 +203,10 @@ const getSingleUser = async (id: string) => {
     return null;
   }
 
+  // order by latest created finance profile
   const financeProfile = await prisma.financeProfile.findMany({
     where: { user_id: id },
+    orderBy: { created_at: 'desc' },
   });
 
   return {
