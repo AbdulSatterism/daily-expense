@@ -134,18 +134,26 @@ const getAllUsers = async (query: Record<string, unknown>) => {
   };
 };
 
+
 const getUserProfileFromDB = async (user: JwtPayload) => {
   const { id } = user;
   const isExistUser = await prisma.user.findUnique({
     where: { id },
-    // include: { finance_profile: true },
   });
 
   if (!isExistUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
   }
 
-  return isExistUser;
+
+  const financeProfile = await prisma.financeProfile.findMany({
+    where: { user_id: id },
+  });
+
+  return {
+    ...isExistUser,
+    finance_profile: financeProfile || [],
+  };
 };
 
 const updateProfileToDB = async (
@@ -186,9 +194,21 @@ const updateProfileToDB = async (
 const getSingleUser = async (id: string) => {
   const result = await prisma.user.findUnique({
     where: { id },
-    // include: { finance_profile: true },
+   
   });
-  return result;
+
+  if (!result) {
+    return null;
+  }
+
+  const financeProfile = await prisma.financeProfile.findMany({
+    where: { user_id: id },
+  });
+
+  return {
+    ...result,
+    finance_profile: financeProfile || [],
+  };
 };
 
 const searchUsers = async (query: Record<string, unknown>, userId: string) => {
@@ -352,57 +372,11 @@ const deleteStatusToggle = async (id: string) => {
 };
 
 
-// TODO: update finance profile by admin only =>
-// update finance profile by admin only =>
-const updateFinanceProfileByAdmin = async (
-  userId: string,
-  financeProfileData: Record<string, unknown> 
-) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    // include: { finance_profile: true },
-  });
-
-  if (!user) {
-    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
-  }
-
-
-  const { creditScore, ...financeProfileUpdateData } = financeProfileData;
-
-  const updatedFinanceProfile = await prisma.$transaction(async (tx) => {
-    if (creditScore) {
-      await tx.user.update({
-        where: { id: userId },
-        data: { creditScore: creditScore  },
-      });
-    }
-
-    // return await tx.financeProfile.update({
-    //   where: { id: user.finance_profile!.id },
-    //   data: financeProfileUpdateData,
-    // });
-  });
-
-  return updatedFinanceProfile;
-
-
-  // const updatedFinanceProfile = await prisma.financeProfile.update({
-  //   where: { id: user.finance_profile?.id },
-  //   data: financeProfileData,
-  // });
-
-
-  // return updatedFinanceProfile;
-};
-
-
-
 //! financial profile create, update, and get all 
 
 const createFinanceProfile = async (userId: string, financeProfileData:any ) => {
 
-  financeProfileData.userId = userId;
+  financeProfileData.user_id = userId;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -420,6 +394,46 @@ const createFinanceProfile = async (userId: string, financeProfileData:any ) => 
 };
 
 
+// update finance profile by admin only =>
+
+const updateFinanceProfile = async (
+  userId: string,
+  financeId: string,
+  financeProfileData: any
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
+  }
+
+  const updatedFinanceProfile = await prisma.financeProfile.update({
+    where: { id: financeId },
+    data: financeProfileData,
+  });
+
+return updatedFinanceProfile;
+
+};
+
+// update credit score by admin only =>
+
+const updateCreditScoreByAdmin = async (userId: string, creditScore: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "User Invalid");
+  }
+
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { creditScore: creditScore as any },
+  });
+};
 
 
 
@@ -436,6 +450,8 @@ export const UserService = {
   addDocumentByAdmin,
   deleteDocumentByAdmin,
   deleteStatusToggle,
-  updateFinanceProfileByAdmin,
   createFinanceProfile,
+  updateFinanceProfile,
+  updateCreditScoreByAdmin
+
 };

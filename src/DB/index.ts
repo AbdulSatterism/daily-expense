@@ -15,11 +15,12 @@ import bcrypt from 'bcryptjs';
 const superUser = {
   name: 'Super Admin',
   role: USER_ROLES.ADMIN,
-  email: config.admin.email,
+  email: config.admin.email as string,
   password: hashedPassword,
   is_verified: true,
   gender: EGender.MALE,
 } satisfies Prisma.UserCreateArgs['data'];
+
 
 const seedAdmin = async () => {
   try {
@@ -31,6 +32,9 @@ const seedAdmin = async () => {
       await prisma.user.create({
         data: superUser,
       });
+
+
+
       logger.info(chalk.green('✔ admin created successfully!'));
     } else {
       console.log('Admin already exists.');

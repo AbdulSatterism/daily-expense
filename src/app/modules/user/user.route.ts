@@ -31,11 +31,29 @@ router.patch(
   UserController.updateProfile,
 );
 
-router.patch(
-  '/update-finance-profile/:id',
+
+// create user finance profile
+
+router.post(
+  '/create-finance/:id',
   auth(USER_ROLES.ADMIN),
-  UserController.updateFinanceProfileByAdmin,
+  UserController.createFinanceProfile,
 );
+
+// update user finance profile
+router.patch(
+  '/update-finance/:id/:financeProfileId',
+  auth(USER_ROLES.ADMIN),
+  UserController.updateFinanceProfile,
+);
+
+// udate credit score by admin
+router.patch(
+  '/update-credit/:id',
+  auth(USER_ROLES.ADMIN),
+  UserController.updateCreditScoreByAdmin,
+);
+
 
 router.patch(
   '/add-document/:id',
@@ -104,6 +122,8 @@ router.delete(
   auth(USER_ROLES.ADMIN),
   UserController.deleteUserByAdmin,
 );
+
+
 
 
 
