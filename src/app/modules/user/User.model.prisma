@@ -58,7 +58,7 @@ model FinanceProfile {
   loan_tenure       Int?       @default(0)
   monthly_repayment_amount Decimal?   @default(0) @db.Decimal(12, 2)
   loan_start_date          DateTime?
-  monthly_due_day          Int?     @default(0)
+  monthly_due_day          DateTime?   
   remaining_tenure  Int?       @default(0)
   creditScore       ECreditScore?
 
