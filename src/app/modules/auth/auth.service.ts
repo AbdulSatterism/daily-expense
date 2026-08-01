@@ -17,6 +17,9 @@ import {
 import generateOTP from '../../../util/generateOTP';
 import AppError from '../../errors/AppError';
 import { prisma } from '@/util/db';
+import unlinkFile from '@/shared/unlinkFile';
+import generateSecurePassword from '@/util/generateSecurePassword';
+import { verifyAppleToken } from '@/helpers/appleHelper';
 
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
@@ -376,8 +379,7 @@ const resendVerificationEmailToDB = async (email: string) => {
   });
 };
 
-//! login with google
-/*
+
 interface IGoogleLoginPayload {
   email: string;
   name: string;
@@ -468,6 +470,8 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
   };
 };
 
+
+/*
 const facebookLogin = async (payload: { token: string }) => {
   if (!payload.token) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Facebook token is required');
@@ -572,6 +576,10 @@ const facebookLogin = async (payload: { token: string }) => {
   }
 };
 
+
+*/
+
+
 const appleLogin = async (payload: { token: string }) => {
   if (!payload.token)
     throw new AppError(StatusCodes.BAD_REQUEST, 'Apple token is required');
@@ -664,7 +672,7 @@ const appleLogin = async (payload: { token: string }) => {
   }
 };
 
-*/
+
 
 export const AuthService = {
   verifyEmailToDB,
@@ -675,4 +683,6 @@ export const AuthService = {
   deleteAccountToDB,
   newAccessTokenToUser,
   resendVerificationEmailToDB,
+  googleLogin,
+  appleLogin,
 };

@@ -22,7 +22,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
   const result = await AuthService.loginUserFromDB(loginData);
 
-  res.cookie('refreshToken', result.refreshToken, {
+  res.cookie('refreshToken', result.refresh_token , {
     secure: config.node_env === 'production',
     httpOnly: true,
   });
@@ -120,7 +120,7 @@ const resendVerificationEmail = catchAsync(async (req, res) => {
   });
 });
 
-/*
+
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.googleLogin(req.body);
 
@@ -132,16 +132,16 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const facebookLogin = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.facebookLogin(req.body);
+// const facebookLogin = catchAsync(async (req: Request, res: Response) => {
+//   const result = await AuthService.facebookLogin(req.body);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: 'User login successfully',
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: StatusCodes.OK,
+//     message: 'User login successfully',
+//     data: result,
+//   });
+// });
 
 const appleLogin = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.appleLogin(req.body);
@@ -154,7 +154,7 @@ const appleLogin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-*/
+
 
 export const AuthController = {
   verifyEmail,
@@ -165,4 +165,6 @@ export const AuthController = {
   deleteAccount,
   newAccessToken,
   resendVerificationEmail,
+  googleLogin,
+  appleLogin,
 };

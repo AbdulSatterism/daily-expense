@@ -119,7 +119,7 @@ router.patch(
 
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   UserController.deleteUserByAdmin,
 );
 
