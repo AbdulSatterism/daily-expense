@@ -500,7 +500,7 @@ const facebookLogin = async (payload: { token: string }) => {
       name: userData.name || '',
       email: userData.email,
       image: localImage || '/default/user.jpg',
-      facebookId: userData.id,
+      facebook_id: userData.id,
       role: 'USER' as const,
       verified: true,
     };
@@ -599,9 +599,9 @@ const appleLogin = async (payload: { token: string }) => {
     const userFields = {
       name: appleData.name || '',
       email: appleData.email,
-      appleId: appleData.sub,
+      apple_id: appleData.sub,
       role: 'USER' as const,
-      verified: true,
+      is_verified: true,
     };
 
     // Step 3 — Find or create user
